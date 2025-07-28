@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Переводчик азбуки Морзе</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+    }
+    
+    h1 {
+        text-align: center;
+        color: #333;
+        font-size: clamp(1.5rem, 4vw, 2.2rem);
+    }
+    
+    h2 {
+        font-size: clamp(1.2rem, 3vw, 1.6rem);
+    }
+    
+    .container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .translator-box {
+        background-color: white;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        resize: vertical;
+        font-size: clamp(14px, 3vw, 16px);
+    }
+    
+    .buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+    
+    button {
+        padding: 10px 15px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: clamp(14px, 3vw, 16px);
+        flex: 1 1 120px;
+        min-width: 120px;
+    }
+    
+    button:hover {
+        background-color: #45a049;
+    }
+    
+    button.secondary {
+        background-color: #2196F3;
+    }
+    
+    button.secondary:hover {
+        background-color: #0b7dda;
+    }
+    
+    .info {
+        margin-top: 20px;
+        font-size: clamp(12px, 2.5vw, 14px);
+        color: #666;
+    }
+    
+    .morse-table {
+        margin-top: 30px;
+        width: 100%;
+        border-collapse: collapse;
+        font-size: clamp(12px, 2.5vw, 14px);
+        overflow-x: auto;
+        display: block;
+    }
+    
+    .morse-table th, .morse-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+    
+    .morse-table th {
+        background-color: #f2f2f2;
+    }
+    
+    .morse-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    /* Медиа-запросы для особых случаев */
+    @media (max-width: 600px) {
+        body {
+            padding: 10px;
+        }
+        
+        .translator-box {
+            padding: 10px;
+        }
+        
+        .buttons {
+            gap: 8px;
+        }
+        
+        button {
+            padding: 8px 10px;
+            flex: 1 1 100px;
+            min-width: 100px;
+        }
+        
+        .morse-table {
+            margin-top: 20px;
+        }
+    }
+
+    @media (max-width: 400px) {
+        button {
+            flex: 1 1 80px;
+            min-width: 80px;
+            font-size: 12px;
+            padding: 6px 8px;
+        }
+    }
+</style>
+</head>
+<body>
+    <h1>Переводчик азбуки Морзе</h1>
+    
+    <div class="container">
+        <div class="translator-box">
+            <h2>Текст → Морзе</h2>
+            <textarea id="textInput" placeholder="Введите текст здесь..."></textarea>
+            <div class="buttons">
+                <button id="toMorseBtn">Перевести в Морзе</button>
+                <button id="playMorseBtn" class="secondary">Проиграть Морзе</button>
+                <button id="copyMorseBtn" class="secondary">Копировать</button>
+            </div>
+            <textarea id="morseOutput" placeholder="Здесь появится код Морзе..." readonly></textarea>
+        </div>
+        
+        <div class="translator-box">
+            <h2>Морзе → Текст</h2>
+            <textarea id="morseInput" placeholder="Введите код Морзе здесь (используйте . и -, разделяйте буквы пробелами, слова - /)"></textarea>
+            <div class="buttons">
+                <button id="toTextBtn">Перевести в текст</button>
+                <button id="copyTextBtn" class="secondary">Копировать</button>
+            </div>
+            <textarea id="textOutput" placeholder="Здесь появится обычный текст..." readonly></textarea>
+        </div>
+        
+        <div class="info">
+            <p>Примечание: В коде Морзе используйте точку (.) для короткого сигнала, тире (-) для длинного. Буквы разделяйте одним пробелом, слова - косой чертой (/).</p>
+        </div>
+        
+        <h2>Таблица кодов Морзе</h2>
+        <table class="morse-table">
+            <tr>
+                <th>Буква/Цифра</th>
+                <th>Код Морзе</th>
+                <th>Буква/Цифра</th>
+                <th>Код Морзе</th>
+            </tr>
+            <tr>
+                <td>A</td>
+                <td>.-</td>
+                <td>B</td>
+                <td>-...</td>
+            </tr>
+            <tr>
+                <td>C</td>
+                <td>-.-.</td>
+                <td>D</td>
+                <td>-..</td>
+            </tr>
+            <tr>
+                <td>E</td>
+                <td>.</td>
+                <td>G</td>
+                <td>--.</td>
+            </tr>
+            <tr>
+                <td>H</td>
+                <td>....</td>
+                <td>K</td>
+                <td>-.-</td>
+            </tr>
+            <tr>
+                <td>O</td>
+                <td>---</td>
+                <td>P</td>
+                <td>.--.</td>
+            </tr>
+            <tr>
+                <td>Q</td>
+                <td>--.-</td>
+                <td>R</td>
+                <td>.-.</td>
+            </tr>
+            <tr>
+                <td>U</td>
+                <td>..-</td>
+                <td>V</td>
+                <td>...-</td>
+            </tr>
+            <tr>
+                <td>W</td>
+                <td>.--</td>
+                <td>X</td>
+                <td>-..-</td>
+            </tr>
+            <tr>
+                <td>Y</td>
+                <td>-.--</td>
+                <td>Z</td>
+                <td>--..</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>.----</td>
+                <td>2</td>
+                <td>..---</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>...--</td>
+                <td>4</td>
+                <td>....-</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>.....</td>
+                <td>6</td>
+                <td>-....</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>--...</td>
+                <td>8</td>
+                <td>---..</td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td>----.</td>
+                <td>0</td>
+                <td>-----</td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        // Словарь азбуки Морзе (на основе предоставленного изображения)
+        const morseCode = {
+            'A': '.-',      'B': '-...',    'C': '-.-.',   'D': '-..',
+            'E': '.',       'G': '--.',     'H': '....',   'K': '-.-',
+            'O': '---',    'P': '.--.',    'Q': '--.-',   'R': '.-.',
+            'U': '..-',     'V': '...-',    'W': '.--',    'X': '-..-',
+            'Y': '-.--',    'Z': '--..',
+            '1': '.----',   '2': '..---',   '3': '...--',  '4': '....-',
+            '5': '.....',   '6': '-....',   '7': '--...',  '8': '---..',
+            '9': '----.',  '0': '-----',
+            ' ': '/'
+        };
+
+        // Обратный словарь для декодирования
+        const reverseMorseCode = {};
+        for (const key in morseCode) {
+            reverseMorseCode[morseCode[key]] = key;
+        }
+
+        // Элементы DOM
+        const textInput = document.getElementById('textInput');
+        const morseOutput = document.getElementById('morseOutput');
+        const morseInput = document.getElementById('morseInput');
+        const textOutput = document.getElementById('textOutput');
+        const toMorseBtn = document.getElementById('toMorseBtn');
+        const toTextBtn = document.getElementById('toTextBtn');
+        const playMorseBtn = document.getElementById('playMorseBtn');
+        const copyMorseBtn = document.getElementById('copyMorseBtn');
+        const copyTextBtn = document.getElementById('copyTextBtn');
+
+        // Функция перевода текста в азбуку Морзе
+        function textToMorse(text) {
+            return text.toUpperCase().split('').map(char => {
+                return morseCode[char] || char;
+            }).join(' ');
+        }
+
+        // Функция перевода азбуки Морзе в текст
+        function morseToText(morse) {
+            return morse.split(' ').map(code => {
+                return reverseMorseCode[code] || code;
+            }).join('');
+        }
+
+        // Функция проигрывания азбуки Морзе
+        function playMorse(morseText) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const audioCtx = new AudioContext();
+            const dot = 0.1; // Длительность точки в секундах
+            let time = audioCtx.currentTime;
+
+            // Частота тона (Гц)
+            const freq = 600;
+            
+            // Обработка каждого символа
+            for (let i = 0; i < morseText.length; i++) {
+                const char = morseText[i];
+                
+                if (char === '.') {
+                    // Точка - короткий сигнал
+                    const oscillator = audioCtx.createOscillator();
+                    oscillator.type = 'sine';
+                    oscillator.frequency.value = freq;
+                    
+                    const gainNode = audioCtx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    
+                    gainNode.gain.setValueAtTime(1, time);
+                    oscillator.start(time);
+                    time += dot;
+                    oscillator.stop(time);
+                    gainNode.gain.setValueAtTime(0, time);
+                } else if (char === '-') {
+                    // Тире - длинный сигнал (3 точки)
+                    const oscillator = audioCtx.createOscillator();
+                    oscillator.type = 'sine';
+                    oscillator.frequency.value = freq;
+                    
+                    const gainNode = audioCtx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    
+                    gainNode.gain.setValueAtTime(1, time);
+                    oscillator.start(time);
+                    time += 3 * dot;
+                    oscillator.stop(time);
+                    gainNode.gain.setValueAtTime(0, time);
+                } else if (char === ' ') {
+                    // Пауза между буквами (1 точка)
+                    time += dot;
+                } else if (char === '/') {
+                    // Пауза между словами (3 точки)
+                    time += 3 * dot;
+                }
+                
+                // Пауза между элементами буквы (1 точка)
+                time += dot;
+            }
+        }
+
+        // Обработчики событий
+        toMorseBtn.addEventListener('click', () => {
+            const text = textInput.value;
+            morseOutput.value = textToMorse(text);
+        });
+
+        toTextBtn.addEventListener('click', () => {
+            const morse = morseInput.value;
+            textOutput.value = morseToText(morse);
+        });
+
+        playMorseBtn.addEventListener('click', () => {
+            const morse = morseOutput.value;
+            if (morse) {
+                playMorse(morse);
+            }
+        });
+
+        copyMorseBtn.addEventListener('click', () => {
+            morseOutput.select();
+            document.execCommand('copy');
+        });
+
+        copyTextBtn.addEventListener('click', () => {
+            textOutput.select();
+            document.execCommand('copy');
+        });
+
+        // Автоматический перевод при вводе (опционально)
+        textInput.addEventListener('input', () => {
+            morseOutput.value = textToMorse(textInput.value);
+        });
+
+        morseInput.addEventListener('input', () => {
+            textOutput.value = morseToText(morseInput.value);
+        });
+    </script>
+</body>
+</html>
